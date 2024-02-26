@@ -4,6 +4,7 @@ const { DBConnection } = require('./database/db.js');
 const User = require('./models/User.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+var cookieParser = require('cookie-parser')
 
 const PORT = process.env.PORT || 8080;
 DBConnection();
@@ -11,6 +12,7 @@ DBConnection();
 //Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -64,10 +66,17 @@ app.post('/login', async (req, res) => {
 
         const token = jwt.sign({ id: user._id, email }, process.env.SECRET_KEY, { expiresIn: '1h' });
         user.token = token;
-        res.status(200).json({
-            message: 'You have succesfully logged in!',
-            user
-        });
+
+        const options = {
+            expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+            httpOnly: true
+        }
+
+        res.status(200).cookie("token", token, options).json({
+            message: "You have successfuly logged in!",
+            success: true,
+            token
+        })
     } catch (error) {
         console.log(error.message);
     }
