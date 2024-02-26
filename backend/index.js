@@ -5,11 +5,13 @@ const User = require('./models/User.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 var cookieParser = require('cookie-parser')
+var cors = require('cors')
 
 const PORT = process.env.PORT || 8080;
 DBConnection();
 
 //Middlewares
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -30,7 +32,7 @@ app.post('/register', async (req, res) => {
         //check if the user already exists
         const existingUser = await User.findOne({ email })
         if (existingUser)
-            return res.status(200).send('User already exists.')
+            return res.status(200).send({ message: 'User already exists.' })
 
         //encrypt the password
         const hashedPassword = await bcrypt.hash(password, 10);
