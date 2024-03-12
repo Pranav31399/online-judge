@@ -22,7 +22,6 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder, in reality, you'd send login credentials to your backend
     login(email, password);
   };
 
